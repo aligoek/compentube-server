@@ -46,7 +46,8 @@ app.use(session({
         secure: true, // Render HTTPS kullandığı için bu gereklidir.
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, // 24 saat
-        sameSite: 'None' // Çapraz site isteklerinde çerezin gönderilmesini sağlar.
+        sameSite: 'None', // Çapraz site isteklerinde çerezin gönderilmesini sağlar.
+        
     }
 }));
 
