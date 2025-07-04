@@ -102,15 +102,22 @@ app.get('/api/auth/google/callback', async (req, res) => {
         req.session.user = user; // Kullanıcı bilgilerini oturuma kaydet
 
         // *** BURADAKİ DEĞİŞİKLİK: Oturumu manuel olarak kaydetmeyi zorla ***
+        req.session.user = user; // Kullanıcı bilgilerini oturuma kaydet
+
+        console.log("Attempting to save session...");
         req.session.save((err) => {
             if (err) {
-                console.error("Error saving session:", err);
+                console.error("ERROR: Failed to save session:", err);
+                // Hata durumunda frontend'e hata mesajıyla geri yönlendir
                 return res.redirect(`https://compentube.top?error=auth_failed&message=${encodeURIComponent('Session save failed.')}`);
             }
-            console.log(`User ${user.email} authenticated and session created.`);
-            // Başarılı girişten sonra kullanıcıyı frontend uygulamasına geri yönlendir
-            // res.redirect('https://compentube.top');
+            console.log(`SUCCESS: User ${user.email} authenticated and session saved.`);
+            // Oturum başarıyla kaydedildikten sonra yönlendirme yap
+            console.log("Redirecting to frontend...");
+            res.redirect('https://compentube.top');
         });
+        console.log("req.session.save() called. Response will be sent after session save callback.");
+
         // --- Değişiklik Sonu ---
 
     } catch (error) {
