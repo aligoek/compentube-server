@@ -1,5 +1,5 @@
 // server.js
-require('dotenv').config({ path: './.env' });; // <-- CRITICAL FIX: Load .env from the root directory
+require('dotenv').config({ path: './.env' }); // <-- CRITICAL FIX: Load .env from the root directory
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
@@ -39,10 +39,10 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: true, // Bu satırı 'true' olarak güncelleyin. Render HTTPS kullandığı için bu gereklidir.
+        secure: true, // Render HTTPS kullandığı için bu gereklidir.
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, // 24 saat
-        sameSite: 'None' // Bu satırı 'None' olarak güncelleyin. Çapraz site isteklerinde çerezin gönderilmesini sağlar.
+        sameSite: 'None' // Çapraz site isteklerinde çerezin gönderilmesini sağlar.
     }
 }));
 
@@ -71,7 +71,7 @@ const isAuthenticated = (req, res, next) => {
 // Bu rota, Google'dan gelen GET isteğini yakalayacak ve token değişimini yapacak.
 app.get('/api/auth/google/callback', async (req, res) => {
     const code = req.query.code; // Kodu URL sorgu parametrelerinden al
-
+    console.log('--- Google Callback Start ---');
     console.log("Received authorization code from Google redirect:", code ? "YES" : "NO");
 
     if (!code) {
@@ -101,9 +101,18 @@ app.get('/api/auth/google/callback', async (req, res) => {
         };
         req.session.user = user; // Kullanıcı bilgilerini oturuma kaydet
 
-        console.log(`User ${user.email} authenticated and session created.`);
-        // Başarılı girişten sonra kullanıcıyı frontend uygulamasına geri yönlendir
-        res.redirect('https://compentube.top');
+        // *** BURADAKİ DEĞİŞİKLİK: Oturumu manuel olarak kaydetmeyi zorla ***
+        req.session.save((err) => {
+            if (err) {
+                console.error("Error saving session:", err);
+                return res.redirect(`https://compentube.top?error=auth_failed&message=${encodeURIComponent('Session save failed.')}`);
+            }
+            console.log(`User ${user.email} authenticated and session created.`);
+            // Başarılı girişten sonra kullanıcıyı frontend uygulamasına geri yönlendir
+            res.redirect('https://compentube.top');
+        });
+        // --- Değişiklik Sonu ---
+
     } catch (error) {
         console.error('--- HATA DETAYLARI: Google Kimlik Doğrulama Token Değişimi ---');
         console.error('Genel Hata Mesajı:', error.message);
@@ -120,7 +129,6 @@ app.get('/api/auth/google/callback', async (req, res) => {
             console.error('İstek Ayarlanırken Hata Oluştu:', error.config);
         }
         // Hata durumunda frontend'e hata mesajıyla geri yönlendir
-        // Hata durumunda yönlendirme güncellendi
         res.redirect(`https://compentube.top?error=auth_failed&message=${encodeURIComponent(error.message || 'Authentication failed on server.')}`);
     }
 });
