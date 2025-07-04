@@ -30,7 +30,7 @@ if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !SESSION_SECRET || !GOOGLE_PRO
 
 // --- Middleware Setup ---
 app.use(cors({
-    origin: 'http://localhost:3000', // Frontend'inizin adresi
+    origin: 'https://compentube.top', // Frontend'inizin adresi
     credentials: true,
 }));
 app.use(express.json());
@@ -47,7 +47,7 @@ app.use(session({
 
 // --- Google OAuth Client ---
 // Google'ın kodu yönlendireceği URI
-const redirectUri = `http://localhost:5000/api/auth/google/callback`;
+const redirectUri = `https://compentube-server.onrender.com/api/auth/google/callback`;
 
 console.log("Initializing OAuth2Client with this exact Redirect URI: \"" + redirectUri + "\"");
 
@@ -101,7 +101,7 @@ app.get('/api/auth/google/callback', async (req, res) => {
 
         console.log(`User ${user.email} authenticated and session created.`);
         // Başarılı girişten sonra kullanıcıyı frontend uygulamasına geri yönlendir
-        res.redirect('http://localhost:3000');
+        res.redirect('https://compentube.top');
     } catch (error) {
         console.error('--- HATA DETAYLARI: Google Kimlik Doğrulama Token Değişimi ---');
         console.error('Genel Hata Mesajı:', error.message);
