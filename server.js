@@ -30,7 +30,7 @@ if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !SESSION_SECRET || !GOOGLE_PRO
 
 // --- Middleware Setup ---
 app.use(cors({
-    origin: 'https://compentube.top', // Frontend'inizin adresi
+    origin: 'https://compentube.top', // Frontend'inizin canlı adresi
     credentials: true,
 }));
 app.use(express.json());
@@ -47,7 +47,7 @@ app.use(session({
 
 // --- Google OAuth Client ---
 // Google'ın kodu yönlendireceği URI
-const redirectUri = `https://compentube-server.onrender.com/api/auth/google/callback`;
+const redirectUri = `https://compentube-server.onrender.com/api/auth/google/callback`; // Render backend URL'niz
 
 console.log("Initializing OAuth2Client with this exact Redirect URI: \"" + redirectUri + "\"");
 
@@ -76,7 +76,8 @@ app.get('/api/auth/google/callback', async (req, res) => {
     if (!code) {
         console.error("Authorization code is missing in the redirect request.");
         // Kod yoksa, frontend'e hata mesajıyla geri yönlendir
-        return res.redirect(`http://localhost:3000?error=auth_failed&message=${encodeURIComponent('Authorization code missing.')}`);
+        // Hata durumunda yönlendirme güncellendi
+        return res.redirect(`https://compentube.top?error=auth_failed&message=${encodeURIComponent('Authorization code missing.')}`);
     }
 
     try {
@@ -109,16 +110,17 @@ app.get('/api/auth/google/callback', async (req, res) => {
 
         if (error.response) {
             console.error('Google API Yanıt Detayları:');
-            console.error('  HTTP Durum Kodu (status):', error.response.status);
-            console.error('  Yanıt Verisi (data):', error.response.data);
+            console.error('   HTTP Durum Kodu (status):', error.response.status);
+            console.error('   Yanıt Verisi (data):', error.response.data);
         } else if (error.request) {
             console.error('İstek Yapıldı, Yanıt Alınamadı (Ağ Hatası Olabilir):');
-            console.error('  İstek Nesnesi:', error.request);
+            console.error('   İstek Nesnesi:', error.request);
         } else {
             console.error('İstek Ayarlanırken Hata Oluştu:', error.config);
         }
         // Hata durumunda frontend'e hata mesajıyla geri yönlendir
-        res.redirect(`http://localhost:3000?error=auth_failed&message=${encodeURIComponent(error.message || 'Authentication failed on server.')}`);
+        // Hata durumunda yönlendirme güncellendi
+        res.redirect(`https://compentube.top?error=auth_failed&message=${encodeURIComponent(error.message || 'Authentication failed on server.')}`);
     }
 });
 
@@ -161,25 +163,25 @@ app.post('/api/auth/google', async (req, res) => {
 
         if (error.response) {
             console.error('Google API Yanıt Detayları:');
-            console.error('  HTTP Durum Kodu (status):', error.response.status);
-            console.error('  HTTP Durum Metni (statusText):', error.response.statusText);
-            console.error('  Yanıt Başlıkları (headers):', error.response.headers);
-            console.error('  Yanıt Verisi (data):', error.response.data);
+            console.error('   HTTP Durum Kodu (status):', error.response.status);
+            console.error('   HTTP Durum Metni (statusText):', error.response.statusText);
+            console.error('   Yanıt Başlıkları (headers):', error.response.headers);
+            console.error('   Yanıt Verisi (data):', error.response.data);
             
             if (error.response.data && typeof error.response.data === 'object') {
                 if (error.response.data.error) {
-                    console.error('  Google API Hata Kodu:', error.response.data.error);
+                    console.error('   Google API Hata Kodu:', error.response.data.error);
                 }
                 if (error.response.data.error_description) {
-                    console.error('  Google API Hata Açıklaması:', error.response.data.error_description);
+                    console.error('   Google API Hata Açıklaması:', error.response.data.error_description);
                 }
                 if (error.response.data.message) {
-                    console.error('  Google API Ek Mesaj:', error.response.data.message);
+                    console.error('   Google API Ek Mesaj:', error.response.data.message);
                 }
             }
         } else if (error.request) {
             console.error('İstek Yapıldı, Yanıt Alınamadı (Ağ Hatası Olabilir):');
-            console.error('  İstek Nesnesi:', error.request);
+            console.error('   İstek Nesnesi:', error.request);
         } else {
             console.error('İstek Ayarlanırken Hata Oluştu:', error.config);
         }
