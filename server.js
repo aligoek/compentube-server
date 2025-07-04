@@ -39,9 +39,10 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
+        secure: true, // Bu satırı 'true' olarak güncelleyin. Render HTTPS kullandığı için bu gereklidir.
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000
+        maxAge: 24 * 60 * 60 * 1000, // 24 saat
+        sameSite: 'None' // Bu satırı 'None' olarak güncelleyin. Çapraz site isteklerinde çerezin gönderilmesini sağlar.
     }
 }));
 
