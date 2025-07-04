@@ -109,13 +109,23 @@ app.get('/api/auth/google/callback', async (req, res) => {
             if (err) {
                 console.error("ERROR: Failed to save session:", err);
                 // Hata durumunda frontend'e hata mesajıyla geri yönlendir
+                // Bu durumda redirect'i burada tutabiliriz, çünkü oturum kaydedilemedi.
                 return res.redirect(`https://compentube.top?error=auth_failed&message=${encodeURIComponent('Session save failed.')}`);
             }
             console.log(`SUCCESS: User ${user.email} authenticated and session saved.`);
-            // Oturum başarıyla kaydedildikten sonra yönlendirme yap
-            console.log("Redirecting to frontend...");
-            res.redirect('https://compentube.top');
+            // Oturum başarıyla kaydedildi, ancak ŞİMDİLİK buraya redirect koymuyoruz.
+            // Bu logdan sonra tarayıcı Network sekmesinde Set-Cookie başlığını arayın.
+            // res.redirect('https://compentube.top'); // BU SATIRI ŞİMDİLİK YORUM SATIRI YAPIN
         });
+
+        // Hata ayıklama amaçlı: Oturum kaydedildikten sonra yanıtın gönderilmesi için bir gecikme ekleyelim
+        // Bu, express-session'ın Set-Cookie başlığını eklemesi için yeterli zaman tanıyabilir.
+        // Normalde bu gerekli değildir, ancak şu anki durum için bir test.
+        setTimeout(() => {
+            console.log("Delayed redirect to frontend...");
+            res.redirect('https://compentube.top'); // Yönlendirmeyi burada yapalım
+        }, 500); // 500ms gecikme
+        
         console.log("req.session.save() called. Response will be sent after session save callback.");
 
         // --- Değişiklik Sonu ---
