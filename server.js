@@ -10,6 +10,10 @@ const ytdl = require('ytdl-core');
 const app = express();
 const port = process.env.PORT || 5000;
 
+// --- CRITICAL FIX: Trust the reverse proxy on Render ---
+app.set('trust proxy', 1); // This tells Express it's behind a proxy and to trust the X-Forwarded-* headers.
+
+
 // --- Configuration ---
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
@@ -115,17 +119,9 @@ app.get('/api/auth/google/callback', async (req, res) => {
             console.log(`SUCCESS: User ${user.email} authenticated and session saved.`);
             // Oturum başarıyla kaydedildi, ancak ŞİMDİLİK buraya redirect koymuyoruz.
             // Bu logdan sonra tarayıcı Network sekmesinde Set-Cookie başlığını arayın.
-            // res.redirect('https://compentube.top'); // BU SATIRI ŞİMDİLİK YORUM SATIRI YAPIN
+            res.redirect('https://compentube.top'); // BU SATIRI ŞİMDİLİK YORUM SATIRI YAPIN
         });
 
-        // Hata ayıklama amaçlı: Oturum kaydedildikten sonra yanıtın gönderilmesi için bir gecikme ekleyelim
-        // Bu, express-session'ın Set-Cookie başlığını eklemesi için yeterli zaman tanıyabilir.
-        // Normalde bu gerekli değildir, ancak şu anki durum için bir test.
-        setTimeout(() => {
-            console.log("Delayed redirect to frontend...");
-            res.redirect('https://compentube.top'); // Yönlendirmeyi burada yapalım
-        }, 500); // 500ms gecikme
-        
         console.log("req.session.save() called. Response will be sent after session save callback.");
 
         // --- Değişiklik Sonu ---
