@@ -109,7 +109,7 @@ app.get('/api/auth/google/callback', async (req, res) => {
             }
             console.log(`User ${user.email} authenticated and session created.`);
             // Başarılı girişten sonra kullanıcıyı frontend uygulamasına geri yönlendir
-            res.redirect('https://compentube.top');
+            // res.redirect('https://compentube.top');
         });
         // --- Değişiklik Sonu ---
 
